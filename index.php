@@ -7,38 +7,52 @@
  */
 
 $ico = [
-    'start' => '10.12.2018',
-    'stop' => '11.12.2018',
-    'name' => 'VISO',
-    'thumbnail' => '8i20l584oyJ5NS_0qaBymcYSqg679IyF.png',
-    'short_description' => 'VISO provides a full cycle of technologies for receiving and making payments.'
+    1 => [
+        'start' => '10.12.2018',
+        'stop' => '11.12.2018',
+        'name' => 'VISO',
+        'thumbnail' => '8i20l584oyJ5NS_0qaBymcYSqg679IyF.png',
+        'short_description' => 'VISO provides a full cycle of technologies for receiving and making payments.'
+    ],
+    2 => [
+        'start' => '17.11.2016',
+        'stop' => '17.11.2017',
+        'name' => 'Cryptopay',
+        'thumbnail' => 'yMD4s5bJ_Xo1BH30Yn_jNNp94NH6k3HJ.jpg',
+        'short_description' => 'Genesis is the platform for the private trust management market, build on Blockchain
+            technology and Smart Contract'
+    ]
 ];
-drawImage($ico);
+
+drawImage($ico[2]);
+
 function drawImage($ico)
 {
+    $background = 'wiser_ico_banner_1200x630.png';
+    $background = 'wiser_ico_banner_1200x630_original.png';
+
     /* Create some objects */
-    $image = new Imagick(realpath('./wiser_ico_banner_1200x630.png'));
-    $icon = new Imagick(realpath('8i20l584oyJ5NS_0qaBymcYSqg679IyF.png'));
+    $image = new Imagick(realpath($background));
+    $icon = new Imagick(realpath($ico['thumbnail']));
     $icon->resizeImage(180, 180, Imagick::FILTER_CATROM, 1);
     $draw = new ImagickDraw();
 
     $image->compositeImage($icon, Imagick::COMPOSITE_DEFAULT, 252, 326);
 
-    /* Black text */
     $draw->setFillColor('white');
 
-    /* Font properties */
-//    $draw->setFont('fonts/Oxygen/Bold.ttf');
+    // Draw name
+    $draw->setFont('fonts/Oxygen/Bold.ttf');
+    $draw->setTextKerning(2);
+    $draw->setFontSize(55);
+    $image->annotateImage($draw, 452, 380, 0, $ico['name']);
+    // Draw long text
     $draw->setFont('fonts/Oxygen/Regular.ttf');
-    $draw->setFontSize(28);
-
-    /* Create text */
-    $image->annotateImage($draw, 10, 45, 0,
-        $ico['short_description']);
-
-    list($lines, $lineHeight) = wordWrapAnnotation($image, $draw, $ico['short_description'], 550);
+    $draw->setTextKerning(1.6);
+    $draw->setFontSize(26);
+    list($lines, $lineHeight) = wordWrapAnnotation($image, $draw, $ico['short_description'], 600);
     for ($i = 0; $i < count($lines); $i++) {
-        $image->annotateImage($draw, 452, 410 + $i * $lineHeight, 0, $lines[$i]);
+        $image->annotateImage($draw, 452, 430 + $i * $lineHeight * 0.55, 0, $lines[$i]);
     }
 
     /* Give image a format */
