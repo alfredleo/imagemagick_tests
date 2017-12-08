@@ -24,7 +24,7 @@ $ico = [
     ]
 ];
 
-drawImage($ico[2]);
+drawImage($ico[1]);
 
 function drawImage($ico)
 {
@@ -46,6 +46,12 @@ function drawImage($ico)
     $draw->setTextKerning(2);
     $draw->setFontSize(55);
     $image->annotateImage($draw, 452, 380, 0, $ico['name']);
+    // Draw start, end time
+    $draw->setFont('fonts/Oxygen/Bold.ttf');
+    $draw->setTextKerning(1);
+    $draw->setFontSize(26);
+    $image->annotateImage($draw, 360, 602, 0, $ico['start']);
+    $image->annotateImage($draw, 726, 602, 0, $ico['stop']);
     // Draw long text
     $draw->setFont('fonts/Oxygen/Regular.ttf');
     $draw->setTextKerning(1.6);
