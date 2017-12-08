@@ -36,7 +36,7 @@ function drawImage($ico)
     $image->annotateImage($draw, 10, 45, 0,
         $ico['short_description']);
 
-    list($lines, $lineHeight) = wordWrapAnnotation($image, $draw, $ico['short_description'], 560);
+    list($lines, $lineHeight) = wordWrapAnnotation($image, $draw, $ico['short_description'], 550);
     for ($i = 0; $i < count($lines); $i++) {
         $image->annotateImage($draw, 452, 410 + $i * $lineHeight, 0, $lines[$i]);
     }
@@ -86,5 +86,78 @@ function wordWrapAnnotation($image, $draw, $text, $maxWidth)
         }
     }
 
+    return array($lines, $lineHeight);
+}
+
+/**
+ * Error if word is more than maxWidth
+ * Ex: wordWrapAnnotation2($image, $draw, 'fsdafd123132132113s', 50);
+ * @param $image Imagick
+ * @param $draw ImagickDraw
+ * @param $text string The text you want to wrap
+ * @param $maxWidth int the maximum width in pixels for your wrapped "virtual" text box
+ * @return array
+ */
+function wordWrapAnnotation2($image, $draw, $text, $maxWidth)
+{
+    $words = preg_split('%\s%', $text, -1, PREG_SPLIT_NO_EMPTY);
+    $lines = array();
+    $i = 0;
+    $lineHeight = 0;
+
+    while (count($words) > 0) {
+        $metrics = $image->queryFontMetrics($draw, implode(' ', array_slice($words, 0, ++$i)));
+        $lineHeight = max($metrics['textHeight'], $lineHeight);
+
+        if ($metrics['textWidth'] > $maxWidth or count($words) < $i) {
+            $lines[] = implode(' ', array_slice($words, 0, --$i));
+            $words = array_slice($words, $i);
+            $i = 0;
+        }
+    }
+
+    return array($lines, $lineHeight);
+}
+
+/* Implement word wrapping... Ughhh... why is this NOT done for me!!!
+*   OK... I know the algorithm sucks at efficiency, but it's for short messages, okay?
+*
+*   Make sure to set the font on the ImagickDraw Object first!
+*   @param image the Imagick Image Object
+*   @param draw the ImagickDraw Object
+*   @param text the text you want to wrap
+*   @param maxWidth the maximum width in pixels for your wrapped "virtual" text box
+*   @return an array of lines and line heights
+*/
+function wordWrapAnnotation1(&$image, &$draw, $text, $maxWidth)
+{
+    $words = explode(" ", $text);
+    $lines = array();
+    $i = 0;
+    $lineHeight = 0;
+    while ($i < count($words)) {
+        $currentLine = $words[$i];
+        if ($i + 1 >= count($words)) {
+            $lines[] = $currentLine;
+            break;
+        }
+        //Check to see if we can add another word to this line
+        $metrics = $image->queryFontMetrics($draw, $currentLine . ' ' . $words[$i + 1]);
+        while ($metrics['textWidth'] <= $maxWidth) {
+            //If so, do it and keep doing it!
+            $currentLine .= ' ' . $words[++$i];
+            if ($i + 1 >= count($words)) {
+                break;
+            }
+            $metrics = $image->queryFontMetrics($draw, $currentLine . ' ' . $words[$i + 1]);
+        }
+        //We can't add the next word to this line, so loop to the next line
+        $lines[] = $currentLine;
+        $i++;
+        //Finally, update line height
+        if ($metrics['textHeight'] > $lineHeight) {
+            $lineHeight = $metrics['textHeight'];
+        }
+    }
     return array($lines, $lineHeight);
 }
