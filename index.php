@@ -24,11 +24,66 @@ $ico = [
     ]
 ];
 
-drawImage($ico[1]);
+//drawBanner($ico[2]);
+drawRating($ico[2]);
 
-function drawImage($ico)
+
+function drawRating($ico)
 {
-    $background = 'wiser_ico_banner_1200x630.png';
+    $background = 'wiser_ico_rating_470x90.png';
+//    $background = 'wiser_ico_rating_470x90_original.png';
+    $star = 'star.png';
+
+    /* Create some objects */
+    $image = new Imagick(realpath($background));
+    $icon = new Imagick(realpath($ico['thumbnail']));
+    $icon->resizeImage(38, 38, Imagick::FILTER_CATROM, 1);
+    $star = new Imagick(realpath('star.png'));
+    $draw = new ImagickDraw();
+
+    $image->compositeImage($icon, Imagick::COMPOSITE_DEFAULT, 112, 84);
+
+    $draw->setFillColor('white');
+
+    // Draw name
+    $draw->setFont('fonts/Oxygen/Bold.ttf');
+    $draw->setTextKerning(2);
+    $draw->setFontSize(14);
+    $image->annotateImage($draw, 157, 69, 0, $ico['name']);
+    // Draw start, end time
+    $draw->setFont('fonts/Oxygen/Bold.ttf');
+    $draw->setTextKerning(1);
+    $draw->setFontSize(26);
+    $image->annotateImage($draw, 360, 602, 0, $ico['start']);
+    $image->annotateImage($draw, 726, 602, 0, $ico['stop']);
+    // Draw long text
+    $draw->setFont('fonts/Oxygen/Regular.ttf');
+    $draw->setTextKerning(1.6);
+    $draw->setFontSize(26);
+    list($lines, $lineHeight) = wordWrapAnnotation($image, $draw, $ico['short_description'], 600);
+    for ($i = 0; $i < count($lines); $i++) {
+        $image->annotateImage($draw, 452, 430 + $i * $lineHeight * 0.55, 0, $lines[$i]);
+    }
+
+    /* Give image a format */
+    $image->setImageFormat('png');
+
+    /* Output the image with headers */
+    header('Content-type: image/png');
+    echo $image;
+    $icon->destroy();
+    $star->destroy();
+    $draw->destroy();
+    $image->destroy();
+}
+
+
+/**
+ * @param $ico array
+ */
+function drawBanner($ico)
+{
+//    $background = 'wiser_ico_banner_1200x630.png';
     $background = 'wiser_ico_banner_1200x630_original.png';
 
     /* Create some objects */
@@ -69,6 +124,7 @@ function drawImage($ico)
     echo $image;
     $image->destroy();
     $icon->destroy();
+    $draw->destroy();
 }
 
 /**
