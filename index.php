@@ -8,62 +8,66 @@
 
 $ico = [
     1 => [
-        'start' => '10.12.2018',
-        'stop' => '11.12.2018',
+        'start_date' => '10.12.2018',
+        'end_date' => '11.12.2018',
         'name' => 'VISO',
         'thumbnail' => '8i20l584oyJ5NS_0qaBymcYSqg679IyF.png',
-        'short_description' => 'VISO provides a full cycle of technologies for receiving and making payments.'
+        'short_description' => 'VISO provides a full cycle of technologies for receiving and making payments.',
+        'rating_average' => '4.5'
     ],
     2 => [
-        'start' => '17.11.2016',
-        'stop' => '17.11.2017',
+        'start_date' => '17.11.2016',
+        'end_date' => '17.11.2017',
         'name' => 'Cryptopay',
         'thumbnail' => 'yMD4s5bJ_Xo1BH30Yn_jNNp94NH6k3HJ.jpg',
         'short_description' => 'Genesis is the platform for the private trust management market, build on Blockchain
-            technology and Smart Contract'
-    ]
+            technology and Smart Contract',
+        'rating_average' => '3.6'
+    ],
+    3 => [
+        'start_date' => '17.11.2016',
+        'end_date' => '17.11.2017',
+        'name' => 'Pulsar Venture Capital ICO',
+        'thumbnail' => 'yMD4s5bJ_Xo1BH30Yn_jNNp94NH6k3HJ.jpg',
+        'short_description' => 'Genesis is the platform for the private trust management market, build on Blockchain
+            technology and Smart Contract',
+        'rating_average' => '5.0'
+    ],
 ];
 
 //drawBanner($ico[2]);
-drawRating($ico[2]);
+drawRating($ico[3]);
 
 
 function drawRating($ico)
 {
-    $background = 'wiser_ico_rating_470x90.png';
-//    $background = 'wiser_ico_rating_470x90_original.png';
+//    $background = 'wiser_ico_rating_470x90.png';
+    $background = 'wiser_ico_rating_470x90_origin.png';
+    $countStars = round(str_replace(',', '.', $ico['rating_average']), 0, PHP_ROUND_HALF_UP);
     $star = 'star.png';
+    $ratingPosition = 0;
 
     /* Create some objects */
     $image = new Imagick(realpath($background));
     $icon = new Imagick(realpath($ico['thumbnail']));
     $icon->resizeImage(38, 38, Imagick::FILTER_CATROM, 1);
-    $star = new Imagick(realpath('star.png'));
+    $star = new Imagick(realpath($star));
     $draw = new ImagickDraw();
 
-    $image->compositeImage($icon, Imagick::COMPOSITE_DEFAULT, 112, 84);
+    $image->compositeImage($icon, Imagick::COMPOSITE_DEFAULT, 112, 46);
+    for ($i = 0; $i < $countStars; $i++) {
+        $ratingPosition = 250 + 36 * $i;
+        $image->compositeImage($star, Imagick::COMPOSITE_DEFAULT, $ratingPosition, 50);
 
+    }
     $draw->setFillColor('white');
 
     // Draw name
     $draw->setFont('fonts/Oxygen/Bold.ttf');
-    $draw->setTextKerning(2);
+    $draw->setTextKerning(0.8);
     $draw->setFontSize(14);
     $image->annotateImage($draw, 157, 69, 0, $ico['name']);
-    // Draw start, end time
-    $draw->setFont('fonts/Oxygen/Bold.ttf');
-    $draw->setTextKerning(1);
-    $draw->setFontSize(26);
-    $image->annotateImage($draw, 360, 602, 0, $ico['start']);
-    $image->annotateImage($draw, 726, 602, 0, $ico['stop']);
-    // Draw long text
-    $draw->setFont('fonts/Oxygen/Regular.ttf');
-    $draw->setTextKerning(1.6);
-    $draw->setFontSize(26);
-    list($lines, $lineHeight) = wordWrapAnnotation($image, $draw, $ico['short_description'], 600);
-    for ($i = 0; $i < count($lines); $i++) {
-        $image->annotateImage($draw, 452, 430 + $i * $lineHeight * 0.55, 0, $lines[$i]);
-    }
+    $image->annotateImage($draw, $ratingPosition + 40, 69, 0, $ico['rating_average']);
 
     /* Give image a format */
     $image->setImageFormat('png');
@@ -105,8 +109,8 @@ function drawBanner($ico)
     $draw->setFont('fonts/Oxygen/Bold.ttf');
     $draw->setTextKerning(1);
     $draw->setFontSize(26);
-    $image->annotateImage($draw, 360, 602, 0, $ico['start']);
-    $image->annotateImage($draw, 726, 602, 0, $ico['stop']);
+    $image->annotateImage($draw, 360, 602, 0, $ico['start_date']);
+    $image->annotateImage($draw, 726, 602, 0, $ico['end_date']);
     // Draw long text
     $draw->setFont('fonts/Oxygen/Regular.ttf');
     $draw->setTextKerning(1.6);
