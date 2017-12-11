@@ -27,16 +27,15 @@ $ico = [
     3 => [
         'start_date' => '17.11.2016',
         'end_date' => '17.11.2017',
-        'name' => 'Pulsar Venture Capital ICO',
+        'name' => 'Pulsar Venture Capital ICOOOOOOO',
         'thumbnail' => 'yMD4s5bJ_Xo1BH30Yn_jNNp94NH6k3HJ.jpg',
-        'short_description' => 'Genesis is the platform for the private trust management market, build on Blockchain
-            technology and Smart Contract',
+        'short_description' => 'f dsaf sdf adsf sadf asdfFund Platform is a platform for building trade and investment crypto funds at the decentralized, convenient and secure s',
         'rating_average' => '5.0'
     ],
 ];
 
-//drawBanner($ico[2]);
-drawRating($ico[3]);
+drawBanner($ico[3]);
+//drawRating($ico[3]);
 
 
 function drawRating($ico)
@@ -44,6 +43,17 @@ function drawRating($ico)
 //    $background = 'wiser_ico_rating_470x90.png';
     $background = 'wiser_ico_rating_470x90_origin.png';
     $countStars = round(str_replace(',', '.', $ico['rating_average']), 0, PHP_ROUND_HALF_UP);
+    $nameMax = 27;
+    $name = $ico['name'];
+    $nameSize = mb_strlen($name);
+    if ($nameSize > 27) {
+        $name = substr($name, 0, $nameMax - 3) . '...';
+        $nameSize = mb_strlen($name);
+    }
+
+    // get size of name, remove 12 chars, multiply by size of a letter
+    $nameStart = $nameSize - 12;
+    $displacement = $nameStart < 0 ? 0 : $nameStart * 7;
     $star = 'star.png';
     $ratingPosition = 0;
 
@@ -54,11 +64,10 @@ function drawRating($ico)
     $star = new Imagick(realpath($star));
     $draw = new ImagickDraw();
 
-    $image->compositeImage($icon, Imagick::COMPOSITE_DEFAULT, 112, 46);
+    $image->compositeImage($icon, Imagick::COMPOSITE_DEFAULT, 112 - $displacement, 46);
     for ($i = 0; $i < $countStars; $i++) {
         $ratingPosition = 250 + 36 * $i;
         $image->compositeImage($star, Imagick::COMPOSITE_DEFAULT, $ratingPosition, 50);
-
     }
     $draw->setFillColor('white');
 
@@ -66,7 +75,7 @@ function drawRating($ico)
     $draw->setFont('fonts/Oxygen/Bold.ttf');
     $draw->setTextKerning(0.8);
     $draw->setFontSize(14);
-    $image->annotateImage($draw, 157, 69, 0, $ico['name']);
+    $image->annotateImage($draw, 157 - $displacement, 69, 0, $name);
     $image->annotateImage($draw, $ratingPosition + 40, 69, 0, $ico['rating_average']);
 
     /* Give image a format */
@@ -79,6 +88,15 @@ function drawRating($ico)
     $star->destroy();
     $draw->destroy();
     $image->destroy();
+}
+
+function limitString ($longString, $max = 27){
+    $string =
+    $nameSize = mb_strlen($string);
+    if ($nameSize > $max) {
+        $longString = substr($longString, 0, $max - 3) . '...';
+        $nameSize = mb_strlen($name);
+    }
 }
 
 
